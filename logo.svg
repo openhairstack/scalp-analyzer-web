@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient: Deep Clinical Obsidian -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080C15"/>
+      <stop offset="50%" stop-color="#0D1527"/>
+      <stop offset="100%" stop-color="#0A101D"/>
+    </linearGradient>
+
+    <!-- Center Hair Shaft Gradient: Electric Cyan to Sapphire -->
+    <linearGradient id="centerShaft" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#00E5FF"/>
+      <stop offset="60%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+
+    <!-- Lateral Shaft Gradient: Precision Cobalt to Ice Blue -->
+    <linearGradient id="lateralShaft" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="50%" stop-color="#00BAE8"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+
+    <!-- Radial Glow for Dermal Papilla Node -->
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#0284C7" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#080C15" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Reticle Glow -->
+    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Canvas Base with Rounded Squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="510" height="510" x="1" y="1" rx="111" fill="none" stroke="#1E293B" stroke-width="2"/>
+
+  <!-- 2. Optical Trichoscope Reticle & Calibration Geometry -->
+  <g opacity="0.45">
+    <!-- Outer concentric optical lens ring -->
+    <circle cx="256" cy="256" r="190" fill="none" stroke="#1E293B" stroke-width="2"/>
+    <circle cx="256" cy="256" r="190" fill="none" stroke="#00E5FF" stroke-width="2" stroke-dasharray="8 20" opacity="0.3"/>
+    
+    <!-- Mid optical measurement ring -->
+    <circle cx="256" cy="256" r="130" fill="none" stroke="#1E293B" stroke-width="1.5" stroke-dasharray="4 8"/>
+
+    <!-- Subtle crosshair ticks (Trichoscopy Scale) -->
+    <line x1="256" y1="54" x2="256" y2="74" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+    <line x1="256" y1="438" x2="256" y2="458" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+    <line x1="54" y1="256" x2="74" y2="256" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+    <line x1="438" y1="256" x2="458" y2="256" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Diagonal micro-ticks -->
+    <circle cx="121" cy="121" r="2.5" fill="#38BDF8" opacity="0.6"/>
+    <circle cx="391" cy="121" r="2.5" fill="#38BDF8" opacity="0.6"/>
+    <circle cx="121" cy="391" r="2.5" fill="#38BDF8" opacity="0.6"/>
+    <circle cx="391" cy="391" r="2.5" fill="#38BDF8" opacity="0.6"/>
+  </g>
+
+  <!-- 3. Computer Vision Bounding / Detection Reticle -->
+  <g stroke="#00E5FF" stroke-width="2.5" fill="none" opacity="0.4" stroke-linecap="round">
+    <!-- Top-Left Corner Bracket -->
+    <path d="M 120 160 L 120 130 L 150 130"/>
+    <!-- Top-Right Corner Bracket -->
+    <path d="M 362 130 L 392 130 L 392 160"/>
+    <!-- Bottom-Left Corner Bracket -->
+    <path d="M 120 352 L 120 382 L 150 382"/>
+    <!-- Bottom-Right Corner Bracket -->
+    <path d="M 392 352 L 392 382 L 362 382"/>
+  </g>
+
+  <!-- 4. The Follicular Unit Architecture -->
+  <g>
+    <!-- Central Node Halo / Glow -->
+    <circle cx="256" cy="336" r="48" fill="url(#coreGlow)"/>
+
+    <!-- Left Lateral Shaft (Smooth Parabolic Growth Curve) -->
+    <path d="M 256 336 C 242 250, 182 178, 156 100" 
+          fill="none" 
+          stroke="url(#lateralShaft)" 
+          stroke-width="13" 
+          stroke-linecap="round"/>
+
+    <!-- Right Lateral Shaft (Symmetrical Parabolic Growth Curve) -->
+    <path d="M 256 336 C 270 250, 330 178, 356 100" 
+          fill="none" 
+          stroke="url(#lateralShaft)" 
+          stroke-width="13" 
+          stroke-linecap="round"/>
+
+    <!-- Center Primary Shaft (Vertical High-Luminance Core) -->
+    <path d="M 256 336 C 256 244, 256 166, 256 72" 
+          fill="none" 
+          stroke="url(#centerShaft)" 
+          stroke-width="15" 
+          stroke-linecap="round"
+          filter="url(#subtleGlow)"/>
+
+    <!-- Concentric Dermal Papilla Node (Follicular Origin Point) -->
+    <circle cx="256" cy="336" r="26" fill="#080C15" stroke="#1E293B" stroke-width="4"/>
+    <circle cx="256" cy="336" r="16" fill="#091322" stroke="#00E5FF" stroke-width="3.5"/>
+    <circle cx="256" cy="336" r="7" fill="#00E5FF"/>
+  </g>
+</svg>
