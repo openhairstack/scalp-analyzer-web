@@ -22,7 +22,7 @@ uploaded anywhere, and the model is downloaded once from Hugging Face and cached
 
 | Feature | Status |
 |---|---|
-| Follicle-unit detection + hair-count class (`fu1`=1, `fu2`=2–3, `fu3`=4–5, `fu4`=6+, `fu5`=unsure) | real — model runs client-side |
+| Follicle-unit detection + hair-count class (`fu1`=1, `fu2`=2, `fu3`=3, `fu4`=4, `fu5`=5+) | real — model runs client-side |
 | Counts, mean hairs per unit | real arithmetic on detections |
 | FU/cm² density | real when you enter a calibration (pixels per mm) |
 | Anterior/posterior "pattern" readout | heuristic — not a Norwood classifier |

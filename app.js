@@ -2,12 +2,12 @@
    Model runs in the browser via onnxruntime-web. No uploads, no server.
 
    Pipeline: letterbox to 640x640 -> ONNX session -> transpose output ->
-   sigmoid class scores -> class-aware NMS -> map back to image coords ->
-   draw, count, band-split, heuristic, plan simulation.
+   class scores (already activated in the exported graph) -> class-aware NMS -> map back to
+   image coords -> draw, count, band-split, heuristic, plan simulation.
 */
 const MODEL_URL = "https://huggingface.co/openhairstack/follicle-fu-v0.1/resolve/main/model.onnx";
 const CLASSES = ["fu1", "fu2", "fu3", "fu4", "fu5"];
-const HAIRS = { fu1: 1, fu2: 2.5, fu3: 4.5, fu4: 7, fu5: 3 };
+const HAIRS = { fu1: 1, fu2: 2, fu3: 3, fu4: 4, fu5: 5 };  // hair count per class in v0.1
 const COLORS = { fu1: "#e6194b", fu2: "#f78230", fu3: "#3cb44b", fu4: "#0082c8", fu5: "#808080" };
 const TARGET = 25, DONOR_AREA = 150, HARVEST = 0.3, ZONE_AREAS = [45, 45, 40];
 const ZONE_NAMES = ["anterior", "middle", "posterior"];
@@ -83,7 +83,7 @@ function transposeAndDecode(output, S = 640) {
       const cx = d[j], cy = d[N + j], w = d[2 * N + j], h = d[3 * N + j];
       let best = -1, bestCls = 0;
       for (let c = 0; c < nc; c++) {
-        const s = 1 / (1 + Math.exp(-d[(4 + c) * N + j]));  // sigmoid
+        const s = d[(4 + c) * N + j];  // scores are sigmoid-activated in the ONNX graph
         if (s > best) { best = s; bestCls = c; }
       }
       if (best > 0.01) boxes.push({ cx, cy, w, h, score: best, cls: bestCls });
@@ -94,7 +94,7 @@ function transposeAndDecode(output, S = 640) {
       const base = i * stride;
       let best = -1, bestCls = 0;
       for (let c = 0; c < nc; c++) {
-        const s = 1 / (1 + Math.exp(-output.data[base + 4 + c]));
+        const s = output.data[base + 4 + c];
         if (s > best) { best = s; bestCls = c; }
       }
       if (best > 0.01) boxes.push({
