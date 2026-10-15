@@ -46,3 +46,11 @@ The banner says so. Training is a one-click Colab notebook
 ([follicle-detect](https://github.com/openhairstack/follicle-detect)); after training, ONNX
 weights publish to the model repo above and this Space activates automatically. The sample
 images still demonstrate the full pipeline with placeholder counts.
+
+---
+
+### Questions & Community Support
+
+Connect with founder Salik Shah:
+* **DM on X:** [@salik](https://x.com/salik)
+* **Discussions:** [GitHub Discussions](https://github.com/orgs/openhairstack/discussions)
