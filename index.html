@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Open Hair Stack — Scalp Analyzer</title>
+<link rel="stylesheet" href="style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Open Hair Stack <span class="thin">· Scalp Analyzer</span></h1>
+    <p class="tagline">Open-source follicular-unit detection from your scalp photo —<br/>
+    runs entirely in your browser. No upload. No account. No server.</p>
+    <div class="badges">
+      <span class="badge warn">Research demo — not a medical device</span>
+      <a class="badge" href="https://github.com/openhairstack" target="_blank" rel="noopener">GitHub</a>
+      <a class="badge" href="https://github.com/openhairstack/follicle-detect" target="_blank" rel="noopener">How it works</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="status" class="status">Model: loading…</div>
+
+  <section class="card">
+    <h2>1 · Photo</h2>
+    <div id="drop" class="drop">
+      <p>Drop a scalp photo here, or</p>
+      <button id="pickBtn" class="btn">Choose file</button>
+      <input type="file" id="fileInput" accept="image/*" hidden/>
+      <p class="hint">Macro / trichoscope photos work best. Photos of identifiable people stay on your machine.
+      Or try a synthetic sample: <button class="link" data-sample="samples/synthetic-1.png">sample 1</button> ·
+      <button class="link" data-sample="samples/synthetic-2.png">sample 2</button></p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2 · Settings</h2>
+    <div class="controls">
+      <label>Confidence <output id="confVal">0.25</output>
+        <input type="range" id="conf" min="0.05" max="0.7" step="0.05" value="0.25"/>
+      </label>
+      <label>Calibration (pixels per mm, optional — enables real density numbers)
+        <input type="number" id="pxmm" min="3" step="0.1" placeholder="e.g. 25.0"/>
+      </label>
+    </div>
+    <button id="analyze" class="btn primary" disabled>Analyze</button>
+  </section>
+
+  <section id="results" class="card hidden">
+    <h2>3 · Results</h2>
+    <div class="results-grid">
+      <div>
+        <canvas id="out" width="640" height="640"></canvas>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div>
+        <div id="summary" class="summary"></div>
+        <h3>Graft-planning sandbox <span class="tiny">(illustrative simulation, not advice)</span></h3>
+        <table class="plan">
+          <thead><tr><th>Zone</th><th>Area cm²</th><th>Density</th><th>Deficit</th><th>Target</th><th>Allocated</th></tr></thead>
+          <tbody id="planBody"></tbody>
+        </table>
+        <canvas id="chart" width="420" height="180"></canvas>
+        <div id="assumptions" class="assumptions"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card disclaimer">
+    <h2>What this is (and isn't)</h2>
+    <p><b>Is:</b> a research demo of an open follicular-unit detector, plus a transparent graft-planning
+    sandbox. Every number printed below is computed by code you can read in
+    <a href="https://github.com/openhairstack/scalp-analyzer" target="_blank" rel="noopener">this repo</a>.</p>
+    <p><b>Is not:</b> a medical device, diagnostic, or surgical plan. Not FDA/CE cleared. The pattern
+    readout is a heuristic, and the plan simulation allocates imaginary grafts using published planning
+    assumptions. If you are losing hair, see a dermatologist.</p>
+    <p class="hint">v0.1 baseline trained on ~688 public CC-BY images. It will miss things. Failure reports
+    are the most valuable thing you can contribute:
+    <a href="https://github.com/openhairstack/scalp-analyzer/issues" target="_blank" rel="noopener">file one</a>.</p>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Open Hair Stack · Apache 2.0 code, CC BY 4.0 data · Questions: DM <a href="https://x.com/salik">@salik on X</a></p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
