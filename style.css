@@ -7,6 +7,8 @@ body { background: var(--bg); color: var(--text);
   font: 16px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 header { padding: 40px 0 8px; }
+.brand-line { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+.brand-line img { border-radius: 9px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; }
 .thin { font-weight: 300; color: var(--dim); }
 .tagline { color: var(--dim); margin: 8px 0 14px; }

@@ -11,9 +11,12 @@
 <body>
 <header>
   <div class="wrap">
-    <h1>Open Hair Stack <span class="thin">· Scalp Analyzer</span></h1>
+    <div class="brand-line">
+      <img src="logo.svg" alt="Open Hair Stack Emblem" width="38" height="38"/>
+      <h1>Open Hair Stack <span class="thin">· Scalp Analyzer</span></h1>
+    </div>
     <p class="tagline">Open-source follicular-unit detection from your scalp photo —<br/>
-    runs entirely in your browser. No upload. No account. No server.</p>
+    runs entirely in your browser via WebAssembly. No upload. No account. No server.</p>
     <div class="badges">
       <span class="badge warn">Research demo — not a medical device</span>
       <a class="badge" href="https://github.com/openhairstack" target="_blank" rel="noopener">GitHub</a>
@@ -31,18 +34,19 @@
       <p>Drop a scalp photo here, or</p>
       <button id="pickBtn" class="btn">Choose file</button>
       <input type="file" id="fileInput" accept="image/*" hidden/>
-      <p class="hint">Macro / trichoscope photos work best. Photos of identifiable people stay on your machine.
-      Synthetic samples below preview the interface only — use a real macro photo for detections:
-      <button class="link" data-sample="samples/synthetic-1.png">sample 1</button> ·
-      <button class="link" data-sample="samples/synthetic-2.png">sample 2</button></p>
+      <p class="hint">Macro / trichoscope photos work best. Photos of identifiable people stay 100% on your machine.<br/>
+      Explore with procedural synthetic samples:
+      <button class="link" data-sample="samples/synthetic-1.png">sample 1 (uniform)</button> ·
+      <button class="link" data-sample="samples/synthetic-2.png">sample 2 (frontal thinning)</button></p>
     </div>
   </section>
 
   <section class="card">
     <h2>2 · Settings</h2>
     <div class="controls">
-      <label>Confidence <output id="confVal">0.25</output>
-        <input type="range" id="conf" min="0.05" max="0.7" step="0.05" value="0.25"/>
+      <label>Confidence threshold <output id="confVal">0.05</output>
+        <input type="range" id="conf" min="0.01" max="0.50" step="0.01" value="0.05"/>
+        <span class="tiny hint">Optimal for v0.1 baseline: 0.03 – 0.08 (updates in real-time)</span>
       </label>
       <label>Calibration (pixels per mm, optional — enables real density numbers)
         <input type="number" id="pxmm" min="3" step="0.1" placeholder="e.g. 25.0"/>

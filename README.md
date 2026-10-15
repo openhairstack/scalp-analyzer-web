@@ -40,12 +40,12 @@ hosting cost forever, works on phones, and — for photos of people's scalps —
 architecture: the image never leaves the device. The Python UI version remains at
 [github.com/openhairstack/scalp-analyzer](https://github.com/openhairstack/scalp-analyzer).
 
-## If the model hasn't loaded yet
+## Client-Side ONNX Model
 
-The banner says so. Training is a one-click Colab notebook
-([follicle-detect](https://github.com/openhairstack/follicle-detect)); after training, ONNX
-weights publish to the model repo above and this Space activates automatically. The sample
-images still demonstrate the full pipeline with placeholder counts.
+The detector runs [`openhairstack/follicle-fu-v0.1`](https://huggingface.co/openhairstack/follicle-fu-v0.1) (`model.onnx`, ~10 MB) directly in the browser via `onnxruntime-web` WebAssembly (WASM).
+- **100% client-side:** no photo or data ever leaves your machine.
+- **Zero server dependency:** once cached by your browser, it runs completely local.
+- **Interactive tuning:** adjust the confidence slider (0.01 – 0.50) to explore candidate follicular unit detections in real-time.
 
 ---
 
