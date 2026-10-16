@@ -18,7 +18,7 @@ uploaded anywhere, and the model is downloaded once from Hugging Face and cached
 - Code: [github.com/openhairstack](https://github.com/openhairstack) · logic in `scalp-analyzer-web/app.js`
 - License: Apache 2.0 (code), CC BY 4.0 (data and docs)
 - Blueprint & Investment: [Commons, Governance & Investment Blueprint](https://github.com/openhairstack/governance/blob/main/COMMONS-AND-INVESTMENT.md)
-- Collaboration Intake: [Tally Collaboration Form](https://tally.so/r/3yPJEk)
+- Collaboration Intake: [Tally Collaboration Form](https://tally.so/r/o96OkV)
 - Project Lead: Salik Shah ([@salik on X](https://x.com/salik))
 
 > **For Clinics, Researchers & Sponsors:** We are partnering with trichologists, physical AI roboticists, and strategic sponsors to advance open biomedical vision and autonomous robotic actuation. Inquiries: [@salik on X](https://x.com/salik).
