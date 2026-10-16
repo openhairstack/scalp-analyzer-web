@@ -12,85 +12,273 @@
 <header>
   <div class="wrap">
     <div class="brand-line">
-      <img src="logo.svg" alt="Open Hair Stack Emblem" width="38" height="38"/>
-      <h1>Open Hair Stack <span class="thin">· Scalp Analyzer</span></h1>
+      <img src="logo.svg" alt="Open Hair Stack Emblem" width="44" height="44" class="brand-logo"/>
+      <div class="brand-text">
+        <div class="brand-title-row">
+          <h1>Open Hair Stack <span class="thin">· Scalp Analyzer</span></h1>
+          <span class="tag-version">v0.1-research</span>
+        </div>
+        <p class="tagline">Client-side follicular-unit detection & density mapping engine — runs 100% locally in your browser via WebAssembly.</p>
+      </div>
     </div>
-    <p class="tagline">Open-source follicular-unit detection from your scalp photo —<br/>
-    runs entirely in your browser via WebAssembly. No upload. No account. No server.</p>
     <div class="badges">
-      <span class="badge warn">Research demo — not a medical device</span>
+      <span class="badge privacy-badge"><span class="beacon beacon-green"></span> 100% Private (Zero Uploads)</span>
+      <span class="badge warn">Research Demo · Not a Medical Device</span>
       <a class="badge" href="https://github.com/openhairstack" target="_blank" rel="noopener">GitHub</a>
-      <a class="badge" href="https://github.com/openhairstack/follicle-detect" target="_blank" rel="noopener">How it works</a>
+      <a class="badge" href="https://huggingface.co/openhairstack/follicle-fu-v0.1" target="_blank" rel="noopener">Model Weights (10.6 MB)</a>
+      <a class="badge" href="https://x.com/salik" target="_blank" rel="noopener">Lead: @salik on X</a>
     </div>
   </div>
 </header>
 
 <main class="wrap">
-  <div id="status" class="status">Model: loading…</div>
+  <!-- System Status Telemetry Card -->
+  <div id="statusCard" class="status-card">
+    <div class="status-left">
+      <span id="statusBeacon" class="beacon beacon-pulse"></span>
+      <span id="statusText">Initializing neural model runtime…</span>
+    </div>
+    <div class="status-specs">
+      <span>YOLO11n ONNX</span> · <span>Single-Thread WASM + SIMD</span> · <span>Client-Side Inference</span>
+    </div>
+  </div>
 
-  <section class="card">
-    <h2>1 · Photo</h2>
-    <div id="drop" class="drop">
-      <p>Drop a scalp photo here, or</p>
-      <button id="pickBtn" class="btn">Choose file</button>
+  <!-- SECTION 1: PHOTO INPUT -->
+  <section class="card" id="photoSection">
+    <div class="card-header">
+      <div class="card-title-wrap">
+        <span class="step-badge">1</span>
+        <h2>Scalp Photo Input</h2>
+      </div>
+      <span class="card-subtitle">Provide a macro crop, trichoscope image, or select a procedural benchmark sample</span>
+    </div>
+
+    <!-- Drop Zone (shown when empty or replacing) -->
+    <div id="drop" class="drop-zone">
+      <div class="drop-icon-wrap">
+        <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <p class="drop-title">Drag & drop your scalp photo here, or <button id="pickBtn" class="btn-text">browse files</button></p>
       <input type="file" id="fileInput" accept="image/*" hidden/>
-      <p class="hint">Macro / trichoscope photos work best. Photos of identifiable people stay 100% on your machine.<br/>
-      Explore with procedural synthetic samples:
-      <button class="link" data-sample="samples/synthetic-1.png">sample 1 (uniform)</button> ·
-      <button class="link" data-sample="samples/synthetic-2.png">sample 2 (frontal thinning)</button></p>
+      <p class="drop-hint">Macro trichoscopy photos work best. Identity stays private — bytes never leave this browser tab.</p>
+      
+      <div class="sample-picker">
+        <span class="sample-label">Benchmark procedural samples:</span>
+        <button class="sample-btn" data-sample="samples/synthetic-1.png" data-name="Sample 1 (Uniform Density)">
+          <span class="sample-swatch" style="background: #2563eb;"></span>
+          Sample 1 (Uniform)
+        </button>
+        <button class="sample-btn" data-sample="samples/synthetic-2.png" data-name="Sample 2 (Frontal Miniaturization)">
+          <span class="sample-swatch" style="background: #d97706;"></span>
+          Sample 2 (Frontal Thinning)
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Thumbnail / Uploaded Photo Preview Card -->
+    <div id="photoPreviewCard" class="preview-card hidden">
+      <div class="preview-thumb-wrap">
+        <img id="thumbImg" class="preview-thumb" alt="Uploaded Scalp Photo"/>
+        <div class="thumb-reticle"></div>
+      </div>
+      <div class="preview-info">
+        <div class="preview-meta-row">
+          <span class="preview-tag-ready"><span class="beacon beacon-green"></span> Photo Loaded in Browser Memory</span>
+          <span id="previewDimensions" class="preview-dim">640 × 640 px</span>
+        </div>
+        <h3 id="previewTitle" class="preview-filename">scalp-photo.jpg</h3>
+        <p class="preview-desc">Ready for neural follicular-unit segmentation, hair-count classification, and density calculations.</p>
+        
+        <div class="preview-actions">
+          <button id="quickAnalyzeBtn" class="btn primary">⚡ Analyze Photo</button>
+          <button id="repickBtn" class="btn secondary">Replace Photo</button>
+          <button id="clearPhotoBtn" class="btn btn-ghost">Remove</button>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="card">
-    <h2>2 · Settings</h2>
-    <div class="controls">
-      <label>Confidence threshold <output id="confVal">0.05</output>
+  <!-- SECTION 2: PARAMETERS & CALIBRATION -->
+  <section class="card" id="settingsSection">
+    <div class="card-header">
+      <div class="card-title-wrap">
+        <span class="step-badge">2</span>
+        <h2>Detection Parameters & Calibration</h2>
+      </div>
+      <span class="card-subtitle">Adjust detection sensitivity and optional physical optical scale</span>
+    </div>
+
+    <div class="controls-grid">
+      <div class="control-box">
+        <div class="control-header">
+          <label for="conf">Confidence Threshold</label>
+          <output id="confVal" class="val-badge">0.05</output>
+        </div>
         <input type="range" id="conf" min="0.01" max="0.50" step="0.01" value="0.05"/>
-        <span class="tiny hint">Optimal for v0.1 baseline: 0.03 – 0.08 (updates in real-time)</span>
-      </label>
-      <label>Calibration (pixels per mm, optional — enables real density numbers)
-        <input type="number" id="pxmm" min="3" step="0.1" placeholder="e.g. 25.0"/>
-      </label>
+        <div class="range-ticks">
+          <span>0.01</span><span>0.05 (Default)</span><span>0.10</span><span>0.25</span><span>0.50</span>
+        </div>
+        <p class="control-help">Live instant filtering. Baseline v0.1 model optimal range: 0.03 – 0.08.</p>
+      </div>
+
+      <div class="control-box">
+        <div class="control-header">
+          <label for="pxmm">Scale Calibration (optional)</label>
+          <span class="val-badge" id="calibStatus">Uncalibrated (Assumed Scale)</span>
+        </div>
+        <div class="input-with-unit">
+          <input type="number" id="pxmm" min="1" step="0.1" placeholder="e.g. 25.0"/>
+          <span class="input-unit">px / mm</span>
+        </div>
+        <div class="quick-presets">
+          <span class="preset-label">Presets:</span>
+          <button class="preset-btn" data-pxmm="25.0">Macro 10× (25 px/mm)</button>
+          <button class="preset-btn" data-pxmm="40.0">Trichoscope (40 px/mm)</button>
+          <button class="preset-btn" data-pxmm="">Clear</button>
+        </div>
+        <p class="control-help">Enables exact follicular unit density (FU/cm²) across clinical scalp zones.</p>
+      </div>
     </div>
-    <button id="analyze" class="btn primary" disabled>Analyze</button>
+
+    <div class="action-bar">
+      <button id="analyze" class="btn primary btn-large" disabled>
+        <span id="analyzeSpinner" class="spinner hidden"></span>
+        <span id="analyzeBtnText">⚡ Run Follicular Analysis</span>
+      </button>
+    </div>
   </section>
 
+  <!-- SECTION 3: CLINICAL RESULTS -->
   <section id="results" class="card hidden">
-    <h2>3 · Results</h2>
-    <div class="results-grid">
-      <div>
-        <canvas id="out" width="640" height="640"></canvas>
-        <div class="legend" id="legend"></div>
+    <div class="card-header">
+      <div class="card-title-wrap">
+        <span class="step-badge good">3</span>
+        <h2>Clinical Analysis & Density Mapping</h2>
       </div>
-      <div>
-        <div id="summary" class="summary"></div>
-        <h3>Graft-planning sandbox <span class="tiny">(illustrative simulation, not advice)</span></h3>
-        <table class="plan">
-          <thead><tr><th>Zone</th><th>Area cm²</th><th>Density</th><th>Deficit</th><th>Target</th><th>Allocated</th></tr></thead>
-          <tbody id="planBody"></tbody>
-        </table>
-        <canvas id="chart" width="420" height="180"></canvas>
-        <div id="assumptions" class="assumptions"></div>
+      <div class="results-actions">
+        <button id="downloadImageBtn" class="btn secondary btn-small">📷 Save Image</button>
+        <button id="exportJsonBtn" class="btn secondary btn-small">📋 Export JSON</button>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="stat-cards-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total Follicular Units</span>
+        <div class="stat-number-wrap">
+          <span id="statTotal" class="stat-number">0</span>
+          <span class="stat-unit">FU</span>
+        </div>
+        <span id="statTotalSub" class="stat-sub">Detected across visible scalp field</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Mean Hairs / Unit</span>
+        <div class="stat-number-wrap">
+          <span id="statMean" class="stat-number">0.00</span>
+          <span class="stat-unit">hairs/FU</span>
+        </div>
+        <span class="stat-sub">Follicle grouping quality indicator</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Measured Density</span>
+        <div class="stat-number-wrap">
+          <span id="statDensity" class="stat-number">—</span>
+          <span class="stat-unit">FU/cm²</span>
+        </div>
+        <span id="statDensitySub" class="stat-sub">Provide px/mm calibration for exact measurement</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Pattern Readout (Heuristic)</span>
+        <div class="stat-number-wrap">
+          <span id="statNorwoodBadge" class="norwood-badge">—</span>
+        </div>
+        <span id="statNorwoodSub" class="stat-sub">Anterior vs. posterior density gradient</span>
+      </div>
+    </div>
+
+    <div class="results-grid">
+      <!-- Left Column: Visual Canvas Viewer -->
+      <div class="canvas-panel">
+        <div class="canvas-header">
+          <span class="canvas-title">Annotated Micrograph Reticle</span>
+          <div class="filter-chips" id="filterChips">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="fu1"><i style="background: #e6194b;"></i> fu1</button>
+            <button class="chip" data-filter="fu2"><i style="background: #f78230;"></i> fu2</button>
+            <button class="chip" data-filter="fu3"><i style="background: #3cb44b;"></i> fu3</button>
+            <button class="chip" data-filter="fu4"><i style="background: #0082c8;"></i> fu4</button>
+            <button class="chip" data-filter="fu5"><i style="background: #808080;"></i> fu5</button>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="out" width="640" height="640"></canvas>
+        </div>
+        <p class="canvas-hint">Boxes: red = 1-hair, orange = 2-hair, green = 3-hair, blue = 4-hair, gray = 5+-hair. Click chips above to isolate classes.</p>
+      </div>
+
+      <!-- Right Column: Distribution & Graft Sandbox -->
+      <div class="metrics-panel">
+        <div class="panel-section">
+          <h3>Zone Density Gradient</h3>
+          <div id="zoneBars" class="zone-bars-container"></div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-section-header">
+            <h3>Graft-Planning Sandbox</h3>
+            <span class="tiny-badge">Illustrative Simulation Only</span>
+          </div>
+          <table class="plan">
+            <thead>
+              <tr><th>Zone</th><th>Area cm²</th><th>Density</th><th>Deficit</th><th>Target</th><th>Allocated</th></tr>
+            </thead>
+            <tbody id="planBody"></tbody>
+          </table>
+
+          <div class="chart-container">
+            <canvas id="chart" width="440" height="180"></canvas>
+          </div>
+          <div id="assumptions" class="assumptions"></div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Ethical & Clinical Disclaimer Section -->
   <section class="card disclaimer">
-    <h2>What this is (and isn't)</h2>
-    <p><b>Is:</b> a research demo of an open follicular-unit detector, plus a transparent graft-planning
-    sandbox. Every number printed below is computed by code you can read in
-    <a href="https://github.com/openhairstack/scalp-analyzer" target="_blank" rel="noopener">this repo</a>.</p>
-    <p><b>Is not:</b> a medical device, diagnostic, or surgical plan. Not FDA/CE cleared. The pattern
-    readout is a heuristic, and the plan simulation allocates imaginary grafts using published planning
-    assumptions. If you are losing hair, see a dermatologist.</p>
-    <p class="hint">v0.1 baseline trained on ~688 public CC-BY images. It will miss things. Failure reports
-    are the most valuable thing you can contribute:
-    <a href="https://github.com/openhairstack/scalp-analyzer/issues" target="_blank" rel="noopener">file one</a>.</p>
+    <h2>Ethical & Clinical Boundary Disclaimers</h2>
+    <div class="disclaimer-grid">
+      <div class="disclaimer-col">
+        <p><b>Scientific Demo:</b> Open Hair Stack provides open-weights neural computer vision models for trichology and dermatological research. Code, data, and model graphs are fully auditable in the open repository.</p>
+        <p><b>Non-Diagnostic:</b> This software is not an FDA/CE cleared medical device, diagnostic test, or clinical treatment plan. Follicular counts and gradient evaluations must not substitute for physical evaluation by a board-certified dermatologist.</p>
+      </div>
+      <div class="disclaimer-col">
+        <p><b>Data Privacy Guarantee:</b> All ONNX graph operations, letterboxing, bounding box decoding, and canvas rendering happen entirely within your local browser's WebAssembly sandbox. No pixels or patient metadata ever leave this machine.</p>
+        <p><b>Baseline Model Notice:</b> v0.1 was trained on ~688 open CC-BY trichoscopy micrographs. Community feedback and edge cases help advance future foundation checkpoints: <a href="https://github.com/openhairstack/scalp-analyzer/issues" target="_blank" rel="noopener">report findings on GitHub</a>.</p>
+      </div>
+    </div>
   </section>
 </main>
 
 <footer class="wrap">
-  <p>Open Hair Stack · Apache 2.0 code, CC BY 4.0 data · Questions: DM <a href="https://x.com/salik">@salik on X</a></p>
+  <div class="footer-content">
+    <div class="footer-left">
+      <img src="logo.svg" alt="Open Hair Stack" width="24" height="24" style="vertical-align: middle;"/>
+      <span><b>Open Hair Stack</b> · Open Source Computational Trichology</span>
+    </div>
+    <div class="footer-right">
+      <span>Apache 2.0 Code · CC BY 4.0 Data</span>
+      <span>Direct Questions: <a href="https://x.com/salik" target="_blank" rel="noopener">@salik on X</a></span>
+    </div>
+  </div>
 </footer>
 
 <script type="module" src="app.js"></script>
