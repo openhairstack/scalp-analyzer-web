@@ -17,6 +17,11 @@ uploaded anywhere, and the model is downloaded once from Hugging Face and cached
 - Model: [`openhairstack/follicle-fu-v0.1`](https://huggingface.co/openhairstack/follicle-fu-v0.1) (yolo11n fine-tune, ONNX for the web)
 - Code: [github.com/openhairstack](https://github.com/openhairstack) · logic in `scalp-analyzer-web/app.js`
 - License: Apache 2.0 (code), CC BY 4.0 (data and docs)
+- Blueprint & Investment: [Commons, Governance & Investment Blueprint](https://github.com/openhairstack/governance/blob/main/COMMONS-AND-INVESTMENT.md)
+- Collaboration Intake: [Tally Collaboration Form](https://tally.so/r/3yPJEk)
+- Project Lead: Salik Shah ([@salik on X](https://x.com/salik))
+
+> **For Clinics, Researchers & Sponsors:** We are partnering with trichologists, physical AI roboticists, and strategic sponsors to advance open biomedical vision and autonomous robotic actuation. Inquiries: [@salik on X](https://x.com/salik).
 
 ## What it does (real) vs. simulates (labeled)
 
